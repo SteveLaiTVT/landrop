@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LanDrop · 电脑端控制台</title>
+<meta name="theme-color" content="#101612" />
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/assets/tokens.css" />
+<link rel="stylesheet" href="/assets/desktop.css" />
+</head>
+<body>
+<div class="app-shell">
+  <aside class="rail">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.4 10 3l7 4.4v5.2L10 17l-7-4.4V7.4Z"/><path d="m3 7.4 7 4.4 7-4.4M10 11.8V17"/></svg>
+      </span>
+      <span class="brand-name">LanDrop</span>
+    </div>
+
+    <nav class="nav-wrap" aria-label="主导航">
+      <div class="nav-group">
+        <button class="nav-item is-active" type="button" data-view="overview" aria-current="page">
+          <svg class="od-icon" style="--od-icon-size:16px" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="5.6" height="5.6" rx="1.4"/><rect x="11.4" y="3" width="5.6" height="5.6" rx="1.4"/><rect x="3" y="11.4" width="5.6" height="5.6" rx="1.4"/><rect x="11.4" y="11.4" width="5.6" height="5.6" rx="1.4"/></svg>
+          <span>概览</span>
+        </button>
+        <button class="nav-item" type="button" data-view="files">
+          <svg class="od-icon" style="--od-icon-size:16px" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6a1.8 1.8 0 0 1 1.8-1.8h2.9L9.4 6h5.8A1.8 1.8 0 0 1 17 7.8v6.4A1.8 1.8 0 0 1 15.2 16H4.8A1.8 1.8 0 0 1 3 14.2V6Z"/></svg>
+          <span>文件</span>
+        </button>
+        <button class="nav-item" type="button" data-view="share">
+          <svg class="od-icon" style="--od-icon-size:16px" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="5" r="2.3"/><circle cx="5" cy="10" r="2.3"/><circle cx="15" cy="15" r="2.3"/><path d="m7.1 8.9 5.8-2.8M7.1 11.1l5.8 2.8"/></svg>
+          <span>共享</span>
+        </button>
+      </div>
+      <div class="nav-group">
+        <button class="nav-item" type="button" data-view="devices">
+          <svg class="od-icon" style="--od-icon-size:16px" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.6" y="4" width="10" height="8" rx="1.5"/><path d="M6 15h4M8 12v3"/><rect x="14" y="8.6" width="3.4" height="7.4" rx="1.1"/></svg>
+          <span>设备</span>
+        </button>
+        <button class="nav-item" type="button" data-view="settings">
+          <svg class="od-icon" style="--od-icon-size:16px" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2.6"/><path d="M10 2.6v2M10 15.4v2M17.4 10h-2M4.6 10h-2M15.2 4.8 13.8 6.2M6.2 13.8l-1.4 1.4M15.2 15.2l-1.4-1.4M6.2 6.2 4.8 4.8"/></svg>
+          <span>设置</span>
+        </button>
+      </div>
+    </nav>
+
+    <div class="rail-foot">
+      <p class="foot-head"><span class="dot dot-live" aria-hidden="true"></span><span id="rail-state">本机正在接收</span></p>
+      <p class="foot-addr mono" id="rail-addr">连接中…</p>
+      <div class="foot-links">
+        <a class="foot-link" id="open-web" href="#" target="_blank" rel="noopener">网页版</a>
+        <a class="foot-link" href="/app" target="_blank" rel="noopener">App 版</a>
+        <a class="foot-link" href="/pair" target="_blank" rel="noopener">配对</a>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="page-head">
+        <h1 class="page-title" id="page-title">概览</h1>
+        <p class="page-sub" id="page-sub">这台电脑的接收状态与最近动态</p>
+      </div>
+      <div class="top-tools">
+        <div class="search">
+          <svg class="od-icon" style="--od-icon-size:14px" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.4"/><path d="m10.4 10.4 3 3"/></svg>
+          <input id="global-search" type="search" placeholder="搜索文件" aria-label="搜索文件" autocomplete="off" />
+        </div>
+        <button class="btn btn-primary btn-sm" type="button" id="pair-btn">
+          <svg class="od-icon" style="--od-icon-size:14px" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 2.5h-2A1 1 0 0 0 2.5 3.5v2M10.5 2.5h2a1 1 0 0 1 1 1v2M5.5 13.5h-2a1 1 0 0 1-1-1v-2M10.5 13.5h2a1 1 0 0 0 1-1v-2"/><rect x="5" y="5" width="6" height="6" rx="1"/></svg>
+          <span class="btn-label">配对手机</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="canvas">
+      <!-- ================= OVERVIEW ================= -->
+      <section class="view" data-panel="overview">
+        <div class="overview-grid">
+          <div class="col-main">
+            <section class="panel recv-panel">
+              <div class="panel-head">
+                <div class="panel-title">
+                  <h2>文件传输</h2>
+                  <p>拖进来，或由手机扫码上传，落盘即出现</p>
+                </div>
+                <span class="mono-chip" id="storage-chip">~/LanDrop</span>
+              </div>
+
+              <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="选择或拖入文件上传">
+                <span class="dz-icon" aria-hidden="true">
+                  <svg class="od-icon" style="--od-icon-size:18px" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14V4.6M6.6 8 10 4.6 13.4 8"/><path d="M3.5 12.6v2A1.9 1.9 0 0 0 5.4 16.5h9.2a1.9 1.9 0 0 0 1.9-1.9v-2"/></svg>
+                </span>
+                <div class="dz-text">
+                  <p class="dz-title">把文件拖到这里</p>
+                  <p class="dz-hint" id="dz-hint">支持任意格式，单个文件最大 8 GB</p>
+                </div>
+                <button class="btn btn-primary btn-sm" type="button" data-pick>选择文件</button>
+                <input type="file" id="file-input" multiple hidden />
+              </div>
+
+              <div class="sub-head">
+                <h3>最近文件</h3>
+                <div class="sub-head-tools">
+                  <span class="count" id="receive-count">—</span>
+                  <button class="link-btn" type="button" data-goto="files">查看全部</button>
+                </div>
+              </div>
+              <ul class="receive-list" id="receive-list" aria-live="polite"></ul>
+            </section>
+          </div>
+
+          <aside class="col-side">
+            <section class="panel pair-panel" id="pair-panel">
+              <div class="panel-head">
+                <div class="panel-title">
+                  <h2>让别人连进来</h2>
+                  <p>同一个 Wi‑Fi 下，扫一下就能传</p>
+                </div>
+              </div>
+
+              <div class="entry-tabs" role="tablist" aria-label="连接方式">
+                <button class="entry-tab is-active" type="button" role="tab" data-entry="phone" aria-selected="true">
+                  <span class="et-title">手机传文件</span><span class="et-sub">临时会话</span>
+                </button>
+                <button class="entry-tab" type="button" role="tab" data-entry="drive" aria-selected="false">
+                  <span class="et-title">分享盘</span><span class="et-sub" id="drive-tab-sub">未开启</span>
+                </button>
+                <button class="entry-tab" type="button" role="tab" data-entry="app" aria-selected="false">
+                  <span class="et-title">App 版</span><span class="et-sub">可收推送</span>
+                </button>
+              </div>
+
+              <div class="qr-stage">
+                <div class="qr-wrap"><img id="qr" src="/qr.svg?data=landrop" alt="连接二维码" width="112" height="112" /></div>
+                <div class="pair-info">
+                  <p class="pair-label" id="pair-label">配对码</p>
+                  <div class="pair-code"><strong id="pair-code">— — —</strong></div>
+                  <p class="qr-caption" id="qr-caption">扫码连接</p>
+                </div>
+              </div>
+
+              <div class="pair-url-row">
+                <span class="pair-url mono" id="pair-url">—</span>
+                <button class="icon-btn" type="button" id="copy-web" title="复制地址" aria-label="复制地址">
+                  <svg class="od-icon" style="--od-icon-size:14px" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="5.5" width="8" height="8" rx="1.6"/><path d="M10.5 5.5V4a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 4v5A1.5 1.5 0 0 0 4 10.5h1.5"/></svg>
+                </button>
+              </div>
+
+              <div class="pair-actions">
+                <a class="btn btn-primary btn-sm" id="open-web-2" href="#" target="_blank" rel="noopener">打开网页版</a>
+                <button class="btn btn-ghost btn-sm" type="button" id="copy-code">复制配对码</button>
+                <button class="icon-btn" type="button" id="refresh-code" title="刷新配对码" aria-label="刷新配对码">
+                  <svg class="od-icon" style="--od-icon-size:14px" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.2 7.2A5.4 5.4 0 0 0 3.6 5.1M2.8 8.8a5.4 5.4 0 0 0 9.6 2.1"/><path d="M13.4 3.4v3.8h-3.8M2.6 12.6V8.8h3.8"/></svg>
+                </button>
+              </div>
+
+              <p class="pair-hint" id="pair-hint">二维码与配对码 24 小时后失效。手机关掉页面后文件仍留在这台电脑。</p>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">
+                <div class="panel-title">
+                  <h2>在线设备</h2>
+                </div>
+              </div>
+              <ul class="device-mini" id="device-mini"></ul>
+            </section>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ================= FILES ================= -->
+      <section class="view" data-panel="files" hidden>
+        <div class="view-bar">
+          <div class="crumbs">
+            <svg class="od-icon" style="--od-icon-size:13px" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4.6A1.4 1.4 0 0 1 3.4 3.2h2l1.2 1.3h4A1.4 1.4 0 0 1 12 5.9v3.9a1.4 1.4 0 0 1-1.4 1.4H3.4A1.4 1.4 0 0 1 2 9.8V4.6Z"/></svg>
+            <span id="crumb-root">全部文件</span>
+            <span class="crumb-sep" id="crumb-sep" hidden>/</span>
+            <span id="crumb-folder" hidden></span>
+            <span class="count" id="files-count">—</span>
+          </div>
+          <div class="view-bar-tools">
+            <label class="sr-only" for="sort-select">排序方式</label>
+            <select class="select-mini" id="sort-select">
+              <option value="date">按传输时间</option>
+              <option value="name">按名称</option>
+              <option value="size">按大小</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" type="button" data-goto="share">共享记录</button>
+            <button class="btn btn-primary btn-sm" type="button" data-pick>
+              <svg class="od-icon" style="--od-icon-size:14px" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+              上传文件
+            </button>
+          </div>
+        </div>
+
+        <div class="files-layout">
+          <aside class="folder-rail" aria-label="文件夹">
+            <div class="folder-rail-head">
+              <span>位置</span>
+              <button class="icon-btn" type="button" id="new-folder" title="新建文件夹" aria-label="新建文件夹">
+                <svg class="od-icon" style="--od-icon-size:14px" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+              </button>
+            </div>
+            <ul class="folder-tree" id="folder-tree"></ul>
+            <p class="folder-tip">文件夹只是整理视图，文件仍在同一个存储目录里。</p>
+          </aside>
+
+          <section class="panel file-center">
+            <div class="batch-list" id="batch-list" aria-label="按时间分组的文件列表"></div>
+
+            <div class="files-empty" id="files-empty" hidden>
+              <span class="empty-icon" aria-hidden="true">
+                <svg class="od-icon" style="--od-icon-size:22px" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6a1.8 1.8 0 0 1 1.8-1.8h2.9L9.4 6h5.8A1.8 1.8 0 0 1 17 7.8v6.4A1.8 1.8 0 0 1 15.2 16H4.8A1.8 1.8 0 0 1 3 14.2V6Z"/></svg>
+              </span>
+              <h3>还没有文件</h3>
+              <p>把文件拖到概览页的上传区，或让手机扫码传一份过来。</p>
+            </div>
+
+            <div class="files-foot">
+              <span id="files-foot-count">—</span>
+              <span class="storage"><span class="storage-bar" aria-hidden="true"><span id="storage-bar-fill"></span></span><span class="mono" id="storage-text">—</span></span>
+            </div>
+          </section>
+
+          <aside class="files-side">
+            <section class="panel activity-panel">
+              <div class="sub-head">
+                <h3>传输动态</h3>
+                <span class="count">最近 50 条</span>
+              </div>
+              <div class="activity-list" id="activity-list"></div>
+            </section>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ================= SHARE ================= -->
+      <section class="view" data-panel="share" hidden>
+        <section class="panel drive-panel" id="drive-panel">
+          <div class="panel-head">
+            <div class="panel-title">
+              <h2>分享盘</h2>
+              <p>一个二维码长期有效：别人扫码就能看盘里的东西，允许时还能往里传。传上来的先进「待拾取」，你点了才算收下</p>
+            </div>
+            <label class="switch-row" title="开启后别人才能扫码进盘">
+              <span class="switch"><input type="checkbox" id="drive-enabled" /><span class="track" aria-hidden="true"></span></span>
+              <span class="switch-label" id="drive-switch-text">已关闭</span>
+            </label>
+          </div>
+
+          <div class="drive-body" id="drive-body">
+            <div class="drive-qr">
+              <div class="qr-wrap"><img id="drive-qr" src="/qr.svg?data=landrop" alt="分享盘二维码" width="124" height="124" /></div>
+              <div class="drive-form">
+                <div class="field compact">
+                  <label for="drive-name">盘名</label>
+                  <input type="text" id="drive-name" placeholder="例如：项目资料盘" maxlength="40" autocomplete="off" />
+                </div>
+                <div class="field compact">
+                  <label for="drive-note">给扫码的人一句话</label>
+                  <input type="text" id="drive-note" placeholder="例如：传完跟我说一声" maxlength="80" autocomplete="off" />
+                </div>
+                <div class="drive-url-row">
+                  <span class="pair-url mono" id="drive-url">—</span>
+                  <button class="btn btn-ghost btn-sm" type="button" id="copy-drive">复制链接</button>
+                </div>
+                <div class="drive-checks">
+                  <label class="check-line"><input type="checkbox" id="drive-browse" /><span>允许查看和下载</span></label>
+                  <label class="check-line"><input type="checkbox" id="drive-upload" /><span>允许往盘里传文件</span></label>
+                </div>
+                <div class="drive-form-foot">
+                  <button class="btn btn-primary btn-sm" type="button" id="drive-save">保存设置</button>
+                  <button class="btn btn-quiet btn-sm" type="button" id="rotate-drive">换个新链接</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="drive-cols">
+              <section class="drive-col">
+                <div class="sub-head">
+                  <h3>盘里的文件</h3>
+                  <span class="count" id="drive-files-count">—</span>
+                </div>
+                <ul class="drive-file-list" id="drive-files"></ul>
+                <div class="drive-add">
+                  <select id="drive-add-select" aria-label="选择要放进盘里的文件"></select>
+                  <button class="btn btn-ghost btn-sm" type="button" id="drive-add">放进盘</button>
+                </div>
+              </section>
+
+              <section class="drive-col">
+                <div class="sub-head">
+                  <h3>待拾取</h3>
+                  <div class="sub-head-tools">
+                    <span class="count" id="drive-pending-count">—</span>
+                    <button class="btn btn-primary btn-sm" type="button" id="pickup-all">全部收下</button>
+                  </div>
+                </div>
+                <ul class="pending-list" id="drive-pending"></ul>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <div class="view-bar">
+          <div class="crumbs"><span>单次分享链接</span><span class="count" id="active-share-count">—</span></div>
+        </div>
+
+        <div class="share-layout">
+          <form class="panel form-panel" id="share-form">
+            <div class="panel-head">
+              <div class="panel-title">
+                <h2>新建共享</h2>
+                <p>链接只在当前网络内有效，文件始终留在这台电脑上</p>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="share-file">选择文件</label>
+              <select id="share-file"></select>
+            </div>
+
+            <div class="field">
+              <span class="field-label" id="perm-label">访问权限</span>
+              <div class="seg" role="radiogroup" aria-labelledby="perm-label">
+                <label>
+                  <input type="radio" name="perm" value="read" checked />
+                  <span><span>只读</span><span class="seg-sub">可以下载</span></span>
+                </label>
+                <label>
+                  <input type="radio" name="perm" value="write" />
+                  <span><span>可写入</span><span class="seg-sub">能回传文件</span></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="share-expiry">有效期</label>
+              <select id="share-expiry">
+                <option value="1h">1 小时后失效</option>
+                <option value="24h" selected>24 小时后失效</option>
+                <option value="7d">7 天后失效</option>
+                <option value="forever">永久有效</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="share-note">备注（可选）</label>
+              <input type="text" id="share-note" placeholder="例如：评审稿，请下载最新版" autocomplete="off" maxlength="120" />
+            </div>
+
+            <button class="btn btn-primary form-submit" type="submit">生成共享链接</button>
+
+            <div class="link-result" id="share-result">
+              <p class="lr-head">
+                <svg class="od-icon" style="--od-icon-size:14px" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8.4 2.8 2.8L13 3.8"/></svg>
+                链接已生成
+              </p>
+              <div class="lr-row">
+                <label class="sr-only" for="share-link-input">共享链接</label>
+                <input type="text" id="share-link-input" readonly />
+                <button class="btn btn-primary btn-sm" type="button" id="copy-new-link">复制</button>
+              </div>
+            </div>
+          </form>
+
+          <section class="share-main">
+            <div class="view-bar">
+              <div class="crumbs"><span>正在共享</span></div>
+            </div>
+            <div class="share-list" id="share-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ================= DEVICES ================= -->
+      <section class="view" data-panel="devices" hidden>
+        <div class="view-bar">
+          <div class="crumbs"><span>已连接过的设备</span></div>
+          <div class="view-bar-tools">
+            <button class="btn btn-ghost btn-sm" type="button" data-goto="overview">显示配对码</button>
+          </div>
+        </div>
+
+        <div class="device-grid" id="device-grid"></div>
+      </section>
+
+      <!-- ================= SETTINGS ================= -->
+      <section class="view" data-panel="settings" hidden>
+        <div class="settings-stack">
+          <section class="panel settings-panel">
+            <div class="panel-head">
+              <div class="panel-title">
+                <h2>存储与网络</h2>
+                <p>改动只影响这台电脑</p>
+              </div>
+            </div>
+
+            <div class="setting-field">
+              <label for="storage-path">存储目录</label>
+              <div class="path-row">
+                <input type="text" id="storage-path" value="" spellcheck="false" />
+                <button class="btn btn-ghost btn-sm" type="button" id="browse-path">浏览…</button>
+                <button class="btn btn-ghost btn-sm" type="button" id="apply-path">应用</button>
+              </div>
+              <label class="check-line">
+                <input type="checkbox" id="migrate-on-change" />
+                <span>换位置时把已有文件一起搬过去</span>
+              </label>
+              <p class="field-hint">手机上传的文件直接写入这里，不会复制到系统其他位置。不勾选迁移时，旧文件留在原目录，只有新文件写到新位置。</p>
+            </div>
+
+            <div class="setting-field">
+              <label for="port">服务端口</label>
+              <div class="path-row narrow">
+                <input type="text" id="port" class="mono" value="8080" inputmode="numeric" />
+              </div>
+              <p class="field-hint" id="port-hint">手机端通过当前局域网地址访问。修改端口后需要重启 LanDrop 才生效。</p>
+            </div>
+
+            <div class="setting-row">
+              <div class="s-text">
+                <strong>仅允许局域网访问</strong>
+                <span>关闭后，任何知道地址的人都可能访问，不建议在公共网络下关闭。</span>
+              </div>
+              <div class="s-control">
+                <label class="switch"><input type="checkbox" id="set-lan" checked aria-label="仅允许局域网访问" /><span class="track"></span></label>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="s-text">
+                <strong>开机自动启动</strong>
+                <span>登录后静默运行，随时等待手机上传。</span>
+              </div>
+              <div class="s-control">
+                <label class="switch"><input type="checkbox" id="set-autostart" aria-label="开机自动启动" /><span class="track"></span></label>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel settings-panel">
+            <div class="panel-head">
+              <div class="panel-title">
+                <h2>访问与安全</h2>
+                <p>共享链接的能力与通知行为</p>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="s-text">
+                <strong>允许同事写入</strong>
+                <span>打开后，共享链接可以设置为「可写入」，对方能把文件传回来。</span>
+              </div>
+              <div class="s-control">
+                <label class="switch"><input type="checkbox" id="set-write" checked aria-label="允许同事写入" /><span class="track"></span></label>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="s-text">
+                <strong>手机上传后通知</strong>
+                <span>收到文件时在桌面弹出系统通知。</span>
+              </div>
+              <div class="s-control">
+                <label class="switch"><input type="checkbox" id="set-notify" checked aria-label="手机上传后通知" /><span class="track"></span></label>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="s-text">
+                <strong>接收大文件时保持唤醒</strong>
+                <span>传输期间阻止电脑进入睡眠，结束后自动恢复。</span>
+              </div>
+              <div class="s-control">
+                <label class="switch"><input type="checkbox" id="set-awake" aria-label="接收大文件时保持唤醒" /><span class="track"></span></label>
+              </div>
+            </div>
+
+            <div class="danger-zone">
+              <div class="s-text">
+                <strong>配对密钥</strong>
+                <span>重置后所有已配对设备都需要重新扫码。</span>
+              </div>
+              <button class="btn btn-danger btn-sm" type="button" id="reset-key">重置</button>
+            </div>
+          </section>
+
+          <section class="panel settings-panel">
+            <div class="panel-head">
+              <div class="panel-title">
+                <h2>自动化（Skill）</h2>
+                <p>让外部 WorkBuddy 定时整理文件、搜索内容</p>
+              </div>
+              <span class="mono-chip" id="skill-state">未连接</span>
+            </div>
+
+            <div class="skill-row">
+              <div class="s-text">
+                <strong>Skill 接口</strong>
+                <span class="mono" id="skill-endpoint">—</span>
+              </div>
+              <div class="s-control">
+                <button class="btn btn-ghost btn-sm" type="button" id="copy-skill-endpoint">复制</button>
+              </div>
+            </div>
+
+            <div class="skill-row">
+              <div class="s-text">
+                <strong>访问令牌</strong>
+                <span class="mono" id="skill-token">—</span>
+              </div>
+              <div class="s-control skill-controls">
+                <button class="btn btn-ghost btn-sm" type="button" id="copy-skill-token">复制</button>
+                <button class="btn btn-ghost btn-sm" type="button" id="rotate-skill-token">重置</button>
+              </div>
+            </div>
+
+            <div class="skill-cmd">
+              <p class="drawer-label">整理命令（在这台电脑上运行，或交给 WorkBuddy 定时执行）</p>
+              <pre id="skill-cmd">landrop plan --preset kind
+landrop apply --preset kind</pre>
+            </div>
+
+            <div class="skill-actions">
+              <button class="btn btn-primary btn-sm" type="button" id="download-skill">下载 Skill 包（zip）</button>
+              <button class="btn btn-ghost btn-sm" type="button" id="preview-plan">先看整理方案</button>
+            </div>
+
+            <p class="field-hint">
+              Skill 包里有 <code>SKILL.md</code> 和命令行工具，拷给任何 WorkBuddy 都能用；也可以用
+              <code>Authorization: Bearer</code> 令牌直接调 <code>/api/skill/*</code>。
+            </p>
+          </section>
+
+          <div class="settings-actions">
+            <button class="btn btn-primary btn-sm" type="button" id="save-settings">保存设置</button>
+            <button class="btn btn-quiet btn-sm" type="button" id="discard-settings">放弃更改</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="statusbar">
+      <span class="sb-item"><span class="dot dot-live" aria-hidden="true"></span>服务运行中</span>
+      <span class="sb-item mono" id="hero-addr">—</span>
+      <button class="sb-copy" type="button" id="copy-addr">复制</button>
+      <span class="sb-spacer"></span>
+      <span class="sb-item">已接收 <b id="stat-files">—</b></span>
+      <span class="sb-item">占用 <b id="stat-size">—</b></span>
+      <span class="sb-item">在线 <b id="stat-devices">—</b></span>
+      <span class="sb-item mono sb-path" id="hero-path">~/LanDrop</span>
+    </footer>
+  </div>
+</div>
+
+<div class="drawer-scrim" id="drawer-scrim" hidden></div>
+<aside class="file-drawer" id="file-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-name" hidden>
+  <header class="drawer-head">
+    <span class="ftype" id="drawer-badge" aria-hidden="true">PDF</span>
+    <div class="drawer-title">
+      <h2 id="drawer-name">文件</h2>
+      <p id="drawer-sub">—</p>
+    </div>
+    <button class="icon-btn" type="button" id="drawer-close" aria-label="关闭详情">
+      <svg class="od-icon" style="--od-icon-size:16px" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="m4 4 8 8M12 4l-8 8"/></svg>
+    </button>
+  </header>
+
+  <dl class="drawer-meta">
+    <div><dt>大小</dt><dd id="drawer-size" class="mono">—</dd></div>
+    <div><dt>传输时间</dt><dd id="drawer-time">—</dd></div>
+    <div><dt>来源</dt><dd id="drawer-source">—</dd></div>
+    <div><dt>方式</dt><dd id="drawer-via">—</dd></div>
+    <div><dt>位置</dt><dd class="mono" id="drawer-path">~/LanDrop</dd></div>
+  </dl>
+
+  <div class="drawer-section">
+    <p class="drawer-label">传输记录</p>
+    <ul class="drawer-history" id="drawer-history"></ul>
+  </div>
+
+  <div class="drawer-actions">
+    <button class="btn btn-ghost" type="button" id="drawer-preview">预览</button>
+    <button class="btn btn-primary" type="button" id="drawer-share">共享给同事</button>
+    <button class="btn btn-ghost" type="button" id="drawer-send">发送到手机</button>
+  </div>
+
+  <div class="send-box" id="send-box" hidden>
+    <label for="send-target">选择已打开 App 版的设备</label>
+    <select id="send-target"></select>
+    <p class="send-note" id="send-note">网页版收不到推送。对方在手机上打开 /app 后，这里才会出现可推送的设备。</p>
+    <div class="send-actions">
+      <button class="btn btn-primary btn-sm" type="button" id="send-confirm">发送</button>
+      <button class="btn btn-quiet btn-sm" type="button" id="send-cancel">取消</button>
+    </div>
+  </div>
+
+  <button class="drawer-download" type="button" id="drawer-download">下载到本机</button>
+  <button class="drawer-delete" type="button" id="drawer-delete">从电脑删除这个文件</button>
+</aside>
+
+<div class="preview-scrim" id="preview-scrim" hidden></div>
+<section class="preview" id="preview" role="dialog" aria-modal="true" aria-labelledby="preview-name" hidden>
+  <header class="preview-head">
+    <span class="ftype" id="preview-badge" aria-hidden="true">FILE</span>
+    <div class="preview-title">
+      <h2 id="preview-name">文件</h2>
+      <p id="preview-sub">—</p>
+    </div>
+    <div class="preview-tools">
+      <button class="btn btn-ghost btn-sm" type="button" id="preview-open">用系统应用打开</button>
+      <a class="btn btn-ghost btn-sm" id="preview-download" href="#" download>下载</a>
+      <button class="icon-btn" type="button" id="preview-close" aria-label="关闭预览">
+        <svg class="od-icon" style="--od-icon-size:16px" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="m4 4 8 8M12 4l-8 8"/></svg>
+      </button>
+    </div>
+  </header>
+  <div class="preview-body" id="preview-body"></div>
+</section>
+
+<dialog id="folder-picker" class="picker">
+  <div class="picker-card">
+    <header class="picker-head">
+      <div>
+        <h2>选择存储位置</h2>
+        <p>选一个目录，之后收到的文件都会写到这里</p>
+      </div>
+      <button class="icon-btn" type="button" id="picker-close" aria-label="关闭">
+        <svg class="od-icon" style="--od-icon-size:16px" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="m4 4 8 8M12 4l-8 8"/></svg>
+      </button>
+    </header>
+    <div class="picker-bar">
+      <button class="btn btn-quiet btn-sm" type="button" id="picker-up">上一级</button>
+      <button class="btn btn-quiet btn-sm" type="button" id="picker-home">主目录</button>
+      <span class="picker-path mono" id="picker-path">—</span>
+    </div>
+    <ul class="picker-list" id="picker-list"></ul>
+    <footer class="picker-foot">
+      <input type="text" id="picker-new-name" placeholder="在此新建文件夹" autocomplete="off" />
+      <button class="btn btn-ghost btn-sm" type="button" id="picker-mkdir">新建</button>
+      <span class="picker-spacer"></span>
+      <button class="btn btn-quiet btn-sm" type="button" id="picker-cancel">取消</button>
+      <button class="btn btn-primary btn-sm" type="button" id="picker-choose">用这个目录</button>
+    </footer>
+  </div>
+</dialog>
+
+<dialog id="move-dialog" class="picker move-dialog">
+  <form method="dialog" class="picker-card picker-card-sm">
+    <header class="picker-head">
+      <div>
+        <h2>移动到</h2>
+        <p id="move-sub">选择目标文件夹</p>
+      </div>
+    </header>
+    <div class="picker-body">
+      <label class="field-label" for="move-select">目标位置</label>
+      <select id="move-select"></select>
+      <div class="move-new">
+        <input type="text" id="move-new-name" placeholder="或新建一个文件夹" autocomplete="off" />
+      </div>
+    </div>
+    <footer class="picker-foot">
+      <span class="picker-spacer"></span>
+      <button class="btn btn-quiet btn-sm" value="cancel">取消</button>
+      <button class="btn btn-primary btn-sm" value="ok" id="move-ok">移动</button>
+    </footer>
+  </form>
+</dialog>
+
+<div class="toast-stack" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+<dialog id="confirm">
+  <form method="dialog" class="dialog-card">
+    <h2 id="confirm-title">确认操作</h2>
+    <p id="confirm-body"></p>
+    <div class="dialog-actions">
+      <button class="btn btn-ghost" value="cancel">取消</button>
+      <button class="btn btn-primary" value="ok" id="confirm-ok">确认</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="/js/desktop.js"></script>
+</body>
+</html>

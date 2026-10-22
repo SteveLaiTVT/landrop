@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>LanDrop · 共享文件</title>
+<meta name="theme-color" content="#f1f3ef" />
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/assets/tokens.css" />
+<link rel="stylesheet" href="/assets/app.css" />
+</head>
+<body>
+<div class="phone-stage">
+  <div class="share-wrap" id="app">
+    <header class="share-brand">
+      <div class="web-brand">
+        <span class="app-logo" aria-hidden="true">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v9"/><path d="m8.6 9.8 3.4 3.4 3.4-3.4"/><path d="M5 16v2.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V16"/></svg>
+        </span>
+        <strong>LanDrop</strong>
+      </div>
+      <span class="web-badge">共享链接</span>
+    </header>
+
+    <section class="share-card">
+      <div class="share-file-head">
+        <span class="ftype" id="badge" data-kind="doc" aria-hidden="true">FILE</span>
+        <div style="min-width:0">
+          <h1 id="file-name">正在读取…</h1>
+          <div class="share-meta">
+            <span id="file-size">—</span>
+            <span id="file-perm">—</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="share-note" id="note" hidden></p>
+
+      <div class="share-actions">
+        <a class="btn btn-primary" id="download" href="#" aria-disabled="true">下载文件</a>
+      </div>
+
+      <div class="share-status" id="status">
+        <span class="dot dot-live" aria-hidden="true"></span>
+        <span id="status-text">正在校验链接…</span>
+      </div>
+
+      <div id="write-zone" hidden>
+        <div class="upload-area" id="upload-area" role="button" tabindex="0" aria-label="把文件传回这台电脑">
+          <strong>把文件传回这台电脑</strong>
+          <span>对方开启了「可写入」，传过去的文件会存进电脑的 LanDrop 目录。</span>
+          <button class="btn btn-ghost btn-sm" type="button" id="pick">选择文件</button>
+          <input type="file" id="file-input" multiple hidden />
+        </div>
+        <div class="share-progress" id="progress" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <p class="share-hint">这条链接只在当前局域网内有效，文件不会上传到云端。每次下载都会记录在电脑端的传输动态里。</p>
+    <p class="web-foot" id="foot">LanDrop · secure local share</p>
+  </div>
+</div>
+<div class="mobile-toasts" id="toasts" aria-live="polite"></div>
+<script src="/js/s.js"></script>
+</body>
+</html>

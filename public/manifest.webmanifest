@@ -1,0 +1,17 @@
+{
+  "name": "LanDrop · 局域网直传",
+  "short_name": "LanDrop",
+  "description": "把电脑变成局域网网盘：手机扫码即可上传、下载与共享，文件不经过云端。",
+  "lang": "zh-CN",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f1f3ef",
+  "theme_color": "#14523f",
+  "icons": [
+    { "src": "/assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

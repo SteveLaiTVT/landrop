@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>LanDrop · 配对</title>
+<meta name="theme-color" content="#f1f3ef" />
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/assets/tokens.css" />
+<link rel="stylesheet" href="/assets/app.css" />
+</head>
+<body>
+<div class="phone-stage">
+  <div class="pair-wrap">
+    <div class="pair-card">
+      <div class="web-brand">
+        <span class="app-logo" aria-hidden="true">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v9"/><path d="m8.6 9.8 3.4 3.4 3.4-3.4"/><path d="M5 16v2.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V16"/></svg>
+        </span>
+        <strong>LanDrop</strong>
+      </div>
+      <h1>输入配对码</h1>
+      <p>在电脑的 LanDrop 控制台「概览 → 连接手机」里，可以看到 6 位配对码。手机和电脑需要连在同一个 Wi‑Fi。</p>
+
+      <form id="pair-form">
+        <div class="field">
+          <label for="code">6 位配对码</label>
+          <input class="pair-input" id="code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="7" placeholder="000 000" aria-describedby="code-hint" />
+        </div>
+        <button class="btn btn-primary" type="submit">连接这台电脑</button>
+      </form>
+
+      <p class="pair-foot" id="code-hint">配对码在电脑端刷新后会变化。扫码仍然是最快的方式。</p>
+    </div>
+  </div>
+</div>
+<script src="/js/pair.js"></script>
+</body>
+</html>

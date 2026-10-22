@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>LanDrop · 手机网页版</title>
+<meta name="theme-color" content="#f1f3ef" />
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/assets/tokens.css" />
+<link rel="stylesheet" href="/assets/app.css" />
+</head>
+<body>
+<div class="phone-stage">
+  <div class="ld-mobile" id="app">
+    <header class="web-top">
+      <div class="web-brand">
+        <span class="app-logo" aria-hidden="true">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v9"/><path d="m8.6 9.8 3.4 3.4 3.4-3.4"/><path d="M5 16v2.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V16"/></svg>
+        </span>
+        <strong>LanDrop</strong>
+      </div>
+      <span class="web-badge">免安装网页版</span>
+    </header>
+
+    <section class="conn web-session">
+      <div class="conn-top">
+        <span class="live-pill" id="live-pill"><span class="dot dot-live" aria-hidden="true"></span><span id="live-text">已连接</span></span>
+        <span class="conn-net mono" id="conn-net">同一 Wi‑Fi</span>
+      </div>
+      <h1 id="host-name">正在连接…</h1>
+      <p class="conn-addr mono" id="host-addr">—</p>
+      <div class="conn-foot">
+        <span id="session-note">扫码会话</span>
+        <span class="mono" id="host-storage">~/LanDrop</span>
+      </div>
+    </section>
+
+    <section class="card up-card">
+      <div class="card-head">
+        <div>
+          <h2>上传到电脑</h2>
+          <p>照片、视频、压缩包都行</p>
+        </div>
+        <span class="eyebrow">Upload</span>
+      </div>
+      <button class="upload-btn" type="button" id="upload-btn">
+        <span class="upload-plus" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5"/><path d="m7.5 9.5 4.5-4.5 4.5 4.5"/><path d="M5 15v3.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V15"/></svg>
+        </span>
+        <span class="upload-text"><strong>选择文件上传</strong><span id="upload-hint">原图不压缩 · 支持多选</span></span>
+      </button>
+      <input type="file" id="file-input" multiple hidden />
+      <div class="up-list" id="progress" aria-live="polite"></div>
+    </section>
+
+    <div class="web-limit">
+      <span class="web-limit-icon" aria-hidden="true">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 6.8a4.2 4.2 0 0 1 4.2 4.2c0 4-4.2 6.4-4.2 6.4s-4.2-2.4-4.2-6.4A4.2 4.2 0 0 1 12 6.8Z"/><path d="M12 3v1.4M4.6 6.2l1 1M19.4 6.2l-1 1"/></svg>
+      </span>
+      <div>
+        <strong>文件不经过任何云端</strong>
+        <p>上传后直接写入这台电脑的存储目录。关掉网页连接就断开，云上不会留下副本。</p>
+      </div>
+    </div>
+
+    <section class="card inbox-card" id="inbox-card" hidden>
+      <div class="card-head">
+        <div>
+          <h2>电脑发来</h2>
+          <p>电脑推送过来的文件，点一下存到手机</p>
+        </div>
+        <span class="count" id="inbox-count">—</span>
+      </div>
+      <ul class="inbox-list" id="inbox-list"></ul>
+    </section>
+
+    <section class="block">
+      <div class="block-head">
+        <h2>电脑上的文件</h2>
+        <span class="count" id="file-count">—</span>
+      </div>
+      <div class="web-tools">
+        <label class="web-search">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="4.4"/><path d="m10.4 10.4 3 3"/></svg>
+          <input type="search" id="web-search" placeholder="搜索文件名、来源、标签" autocomplete="off" />
+        </label>
+      </div>
+      <div class="web-chips" id="folder-chips"></div>
+      <div class="web-batches" id="batches">
+        <div class="empty-state"><h3>正在读取</h3><p>稍等，正在从电脑取文件列表。</p></div>
+      </div>
+      <p class="list-note">点文件名可以预览，点「下载」保存到手机。文件都在电脑的同一个存储目录里，文件夹只是整理视图。</p>
+    </section>
+
+    <section class="card install-card">
+      <p class="eyebrow">推送</p>
+      <h2>电脑也能直接发给你</h2>
+      <p>保持这个页面开着，电脑端控制台把文件「发送到手机」后会立刻出现在上面的「电脑发来」。页面关掉就收不到，文件仍然留在电脑上。</p>
+      <a class="btn btn-ghost m-btn" href="/app">需要常驻后台？用 App 版</a>
+    </section>
+
+    <section class="card install-card">
+      <p class="eyebrow">Local only</p>
+      <h2>只有同一 Wi‑Fi 才能打开</h2>
+      <p>这个页面由电脑上的 LanDrop 直接提供，离开局域网就不可用。电脑关机或退出 LanDrop 后，页面会自动断开。</p>
+      <p class="list-note">需要更长的连接时间，请在电脑端刷新配对码后重新扫码。</p>
+    </section>
+
+    <p class="web-foot mono" id="foot">LanDrop web</p>
+  </div>
+</div>
+<div class="sheet-scrim" id="sheet-scrim" hidden></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-name" hidden>
+  <header class="sheet-head">
+    <div>
+      <h2 id="sheet-name">文件</h2>
+      <p id="sheet-sub">—</p>
+    </div>
+    <button class="sheet-close" type="button" id="sheet-close" aria-label="关闭预览">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m4 4 8 8M12 4l-8 8"/></svg>
+    </button>
+  </header>
+  <div class="sheet-body" id="sheet-body"></div>
+  <footer class="sheet-foot">
+    <button class="btn btn-ghost m-btn" type="button" id="sheet-download">下载到手机</button>
+  </footer>
+</section>
+
+<div class="mobile-toasts" id="toasts" aria-live="polite"></div>
+<script src="/js/w.js"></script>
+</body>
+</html>

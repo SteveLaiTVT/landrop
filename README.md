@@ -4,6 +4,10 @@
 
 基于设计交付包（`index.html` / `web.html` / `mobile.html` / `android.html`）实现的生产版本：**桌面 App**、手机网页版、App 版（可安装 PWA）、共享页、配对页。
 
+- GitHub：https://github.com/SteveLaiTVT/landrop
+- CNB：https://cnb.cool/stevelife524/landrop
+- 许可证：MIT
+
 ---
 
 ## 两种形态

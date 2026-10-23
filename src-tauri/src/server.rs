@@ -230,6 +230,8 @@ pub fn start(app: &AppHandle) -> Result<Server, String> {
         .env("LANDROP_PUBLIC_DIR", &public)
         .env("LANDROP_PORT", port.to_string())
         .env("LANDROP_DESKTOP", "1")
+        // 让控制台显示的版本号与安装包一致，而不是后端自己的
+        .env("LANDROP_APP_VERSION", app.package_info().version.to_string())
         .arg(format!("--port={}", port))
         // stdin 保持开启：App 被强杀时管道随之关闭，后端据此自杀，不留下占端口的孤儿进程
         .stdin(Stdio::piped())

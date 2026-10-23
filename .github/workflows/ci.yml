@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: 后端测试
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 端到端测试
+        run: npm test
+
+  desktop:
+    name: 桌面端编译检查
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: 生成占位 sidecar
+        shell: pwsh
+        run: |
+          # externalBin 在编译期就会校验文件存在，这里放个占位即可；
+          # 真正的 sidecar 由 release 流程构建。
+          New-Item -ItemType Directory -Force -Path src-tauri/binaries | Out-Null
+          if (-not (Test-Path src-tauri/binaries/landrop-server-x86_64-pc-windows-msvc.exe)) {
+            New-Item -ItemType File -Force -Path src-tauri/binaries/landrop-server-x86_64-pc-windows-msvc.exe | Out-Null
+          }
+
+      - name: cargo check
+        run: cargo check --manifest-path src-tauri/Cargo.toml

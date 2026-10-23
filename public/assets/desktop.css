@@ -455,6 +455,18 @@ a:hover { text-decoration: underline; text-underline-offset: 2px; }
   white-space: nowrap;
 }
 
+/* 更新状态：只有「可更新」值得强调，其余保持中性不抢视线 */
+.mono-chip[data-state="available"] {
+  background: color-mix(in oklab, var(--accent) 12%, var(--surface-soft));
+  border-color: color-mix(in oklab, var(--accent) 34%, var(--line-soft));
+  color: var(--accent-ink, var(--ink));
+}
+
+.mono-chip[data-state="error"] {
+  border-color: color-mix(in oklab, var(--danger, #b4453a) 34%, var(--line-soft));
+  color: var(--danger, #b4453a);
+}
+
 .sub-head {
   display: flex;
   align-items: center;

@@ -3,6 +3,7 @@
 
 mod server;
 mod tray;
+mod updater;
 
 use tauri::{Manager, RunEvent, WebviewUrl, WebviewWindowBuilder};
 
@@ -54,6 +55,7 @@ fn main() {
         }))
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_clipboard_manager::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
             let handle = app.handle().clone();
 
@@ -93,6 +95,8 @@ fn main() {
             }
 
             tray::build(&handle)?;
+            updater::init(&handle);
+            updater::spawn_background_check(handle);
             Ok(())
         })
         // 关窗不停服务：托盘是唯一的退出通道

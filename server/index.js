@@ -17,6 +17,25 @@ const { buildPreview, previewKind } = require("./preview");
 const { writeZip } = require("./zip");
 
 const VERSION = "1.0.0";
+// 桌面壳会把真实安装版本注入进来；直接跑 node 时退回后端自己的版本号
+const APP_VERSION = process.env.LANDROP_APP_VERSION || VERSION;
+// 桌面端检查完更新会把结论写在这里，后端只读不写
+const UPDATE_STATE_FILE = path.join(DATA_DIR, "update-state.json");
+
+function readUpdateState() {
+  try {
+    const data = JSON.parse(fs.readFileSync(UPDATE_STATE_FILE, "utf8"));
+    return {
+      status: typeof data.status === "string" ? data.status : "idle",
+      available: data.available || null,
+      notes: data.notes || null,
+      checkedAt: Number.isFinite(data.checkedAt) ? data.checkedAt : null,
+      message: data.message || null
+    };
+  } catch {
+    return { status: "idle", available: null, notes: null, checkedAt: null, message: null };
+  }
+}
 const config = loadConfig();
 const portArg = process.argv.find((arg) => arg.startsWith("--port="));
 if (portArg) {
@@ -553,6 +572,12 @@ async function buildState(req) {
       token: config.skillToken,
       endpoint: `${origin}/api/skill`,
       packed: false
+    },
+    app: {
+      version: APP_VERSION,
+      desktop: process.env.LANDROP_DESKTOP === "1",
+      update: readUpdateState(),
+      repo: "https://github.com/SteveLaiTVT/landrop"
     },
     limits: { maxUploadGB: config.maxUploadGB }
   };

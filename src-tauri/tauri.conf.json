@@ -26,6 +26,7 @@
       "../public": "public",
       "../skill": "skill"
     },
+    "createUpdaterArtifacts": true,
     "windows": {
       "nsis": {
         "installMode": "currentUser",
@@ -35,5 +36,16 @@
     },
     "shortDescription": "把电脑变成局域网网盘",
     "longDescription": "LanDrop 把本机变成一个局域网文件服务器，手机扫码即可与电脑互传文件，数据不经过任何云端。"
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://github.com/SteveLaiTVT/landrop/releases/latest/download/latest.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlENzA1QTI5NjAxN0Q0NjkKUldScDFCZGdLVnB3bmV1cTJCaEVnR2p0c2g4UGs5ZVNNOTZWbVdYdGJVbFFkZEp2bmxjallTR1QK",
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   }
 }

@@ -5,11 +5,14 @@
 
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
 use tauri::tray::{MouseButton, TrayIconBuilder, TrayIconEvent};
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Manager, Wry};
 use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_opener::OpenerExt;
 
 use crate::server::Server;
+
+/// 升级菜单项的句柄。检查到新版本后要就地改文案，重建整个托盘菜单会闪。
+pub struct UpdateItem(pub MenuItem<Wry>);
 
 fn show_main(app: &AppHandle) {
     if let Some(win) = app.get_webview_window("main") {
@@ -29,9 +32,11 @@ pub fn build(app: &AppHandle) -> tauri::Result<()> {
     let open = MenuItem::with_id(app, "open", "打开 LanDrop 控制台", true, None::<&str>)?;
     let copy = MenuItem::with_id(app, "copy", "复制手机访问地址", true, None::<&str>)?;
     let folder = MenuItem::with_id(app, "folder", "打开接收文件夹", true, None::<&str>)?;
+    let update = MenuItem::with_id(app, "update", "检查更新", true, None::<&str>)?;
     let sep = PredefinedMenuItem::separator(app)?;
     let quit = MenuItem::with_id(app, "quit", "退出 LanDrop", true, None::<&str>)?;
-    let menu = Menu::with_items(app, &[&open, &copy, &folder, &sep, &quit])?;
+    let menu = Menu::with_items(app, &[&open, &copy, &folder, &update, &sep, &quit])?;
+    app.manage(UpdateItem(update));
 
     let mut builder = TrayIconBuilder::with_id("landrop-tray")
         .tooltip(TRAY_TIP_ACTIVE)
@@ -52,6 +57,7 @@ pub fn build(app: &AppHandle) -> tauri::Result<()> {
                     let _ = app.opener().open_path(dir.to_string_lossy(), None::<&str>);
                 }
             }
+            "update" => crate::updater::on_menu(app),
             "quit" => {
                 if let Some(srv) = app.try_state::<Server>() {
                     srv.stop();
@@ -82,6 +88,25 @@ pub fn build(app: &AppHandle) -> tauri::Result<()> {
     // 单击托盘也能唤起，Windows 用户习惯这个
     if let Some(tray) = app.tray_by_id("landrop-tray") {
         let _ = tray.set_show_menu_on_left_click(false);
+    }
+    Ok(())
+}
+
+/// 有可装版本时把菜单项改成「安装更新 vX.Y.Z」，否则还原成「检查更新」。
+pub fn set_update_label(app: &AppHandle, version: Option<&str>) {
+    if let Some(item) = app.try_state::<UpdateItem>() {
+        let text = match version {
+            Some(v) => format!("安装更新 v{v}"),
+            None => "检查更新".to_string(),
+        };
+        let _ = item.0.set_text(text);
+    }
+}
+
+/// 桌面端没有引入通知插件，用托盘 tooltip 做轻量反馈——不打扰，但鼠标一放就能看到。
+pub fn notify(app: &AppHandle, message: &str) -> tauri::Result<()> {
+    if let Some(tray) = app.tray_by_id("landrop-tray") {
+        tray.set_tooltip(Some(format!("LanDrop · {message}")))?;
     }
     Ok(())
 }

@@ -25,6 +25,7 @@
     moveIds: [],
     pickerPath: "",
     drive: null,
+    app: null,
     entry: "phone",
     loading: true,
     refreshing: false,
@@ -241,6 +242,7 @@
       state.pairing = data.pairing;
       state.limits = data.limits || state.limits;
       state.settings = data.settings;
+      state.app = data.app || null;
       state.drive = data.drive || null;
       state.loading = false;
       renderAll();
@@ -1440,6 +1442,7 @@
     renderDevices();
     renderSkill();
     renderDrive();
+    renderAbout();
   }
 
   /* ---------------- 连接入口（手机 / 分享盘 / App） ---------------- */
@@ -1695,6 +1698,60 @@
   }
 
   $("#pickup-all").addEventListener("click", () => pickupPending(null));
+
+  /* ---------------- 关于与更新 ---------------- */
+
+  const UPDATE_LABEL = {
+    idle: "未检查",
+    checking: "检查中",
+    uptodate: "已是最新",
+    available: "可更新",
+    downloading: "下载中",
+    installing: "正在安装",
+    error: "检查失败"
+  };
+
+  function renderAbout() {
+    const info = state.app || {};
+    const update = info.update || {};
+    $("#app-version").textContent = info.version ? "v" + info.version : "—";
+
+    const chip = $("#update-chip");
+    const label = UPDATE_LABEL[update.status] || "未检查";
+    chip.textContent = update.available ? `${label} v${update.available}` : label;
+    chip.dataset.state = update.status || "idle";
+
+    $("#update-channel").textContent = info.desktop
+      ? "GitHub Releases · 安装版自动更新"
+      : "浏览器模式 · 不支持自动更新";
+    $("#update-when").textContent = update.checkedAt
+      ? relativeTime(new Date(update.checkedAt * 1000).toISOString())
+      : "未检查";
+
+    const hint = $("#update-hint");
+    if (update.status === "available") {
+      hint.textContent =
+        `发现新版本 v${update.available}：右键任务栏托盘图标，点「安装更新 v${update.available}」即可下载并重启。` +
+        (update.notes ? ` 更新说明：${update.notes}` : "");
+    } else if (update.status === "error") {
+      hint.textContent = `检查更新失败：${update.message || "网络不可达"}。可以先到发布页下载新版本覆盖安装。`;
+    } else if (!info.desktop) {
+      hint.textContent = "当前是通过浏览器访问的后端服务，没有桌面壳，所以不会自动更新。安装桌面版后才有更新通道。";
+    } else {
+      hint.textContent =
+        "自动更新只对安装版生效。右键任务栏托盘图标可以看到「检查更新」；发现新版本后同一位置会变成「安装更新 vX.Y.Z」，点击即下载并重启。";
+    }
+  }
+
+  $("#copy-releases").addEventListener("click", async () => {
+    const url = (state.app && state.app.repo) || "https://github.com/SteveLaiTVT/landrop/releases";
+    try {
+      await navigator.clipboard.writeText(url + "/releases");
+      toast("发布页地址已复制");
+    } catch {
+      toast("复制失败，请手动选择", "error");
+    }
+  });
 
   /* ---------------- settings ---------------- */
 

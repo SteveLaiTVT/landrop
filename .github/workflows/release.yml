@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "版本号，例如 1.0.1（需先手动打 tag 再跑，或直接推 tag 触发）"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: 构建并发布
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 同步版本号
+        shell: pwsh
+        run: |
+          $tag = if ("${{ github.event_name }}" -eq "workflow_dispatch") { "${{ github.event.inputs.version }}" } else { "${{ github.ref_name }}" }
+          $ver = $tag.TrimStart("v")
+          node scripts/set-version.mjs $ver
+
+      - name: 构建后端 sidecar
+        run: npm run build:sidecar
+
+      - name: 构建安装包并发布
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', github.event.inputs.version) || github.ref_name }}
+          releaseName: LanDrop ${{ github.event_name == 'workflow_dispatch' && format('v{0}', github.event.inputs.version) || github.ref_name }}
+          releaseBody: |
+            安装包见下方 Assets。已装旧版的用户不用手动下载：桌面端会自动检查这个 Release，托盘菜单里点「安装更新」即可。
+
+            - 支持 Windows 10/11 x64
+            - 安装到用户目录，不需要管理员权限
+            - 首次运行请在防火墙弹窗里允许「专用网络」，否则手机连不上
+          releaseDraft: false
+          prerelease: false
+          includeUpdaterJson: true
+          args: --bundles nsis

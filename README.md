@@ -175,9 +175,14 @@ public/                     前端资源，由后端直接提供
 scripts/build-sidecar.mjs   把后端压成单文件可执行（esbuild + Node SEA + postject）
 scripts/pack-skill.mjs      打包 skill/ → dist/landrop-skill.zip
 scripts/pack-release.mjs    把安装包 + 说明 + 哈希压成 dist/LanDrop-1.0.0-发布包.zip
+scripts/set-version.mjs     一条命令同步所有版本号（package / tauri.conf / Cargo.toml / server）
+scripts/qa/                 UI 验收用的一次性辅助脚本（截图、取窗口、裁剪），不参与构建
 test/e2e.mjs     端到端 HTTP 测试（59 项）
 test/visual.mjs  多视口截图 + 溢出/报错检查（需要本机 Chrome）
 test/check-ui.mjs 新功能交互验收：入口切换、分享盘管理、点行预览（需要本机 Chrome）
+
+.github/workflows/ci.yml       push / PR：后端 59 项测试 + cargo check
+.github/workflows/release.yml  推 v*.*.* tag：构建 sidecar → 打安装包 → 签名 → 发 Release
 ```
 
 - **桌面壳与后端解耦**：Rust 只负责进程与窗口，业务全在 Node 里。改后端逻辑不用动 Rust；改窗口行为不用碰业务。
@@ -207,13 +212,39 @@ npm run app:build       # 上面一步 + tauri build，产出安装包
 - 安装包 `src-tauri/target/release/bundle/nsis/LanDrop_1.0.0_x64-setup.exe`（约 23 MB，含后端与 `public/`、`skill/`）
 - 免安装目录 `src-tauri/target/release/`（`landrop.exe` + `landrop-server.exe` 需同目录）
 
+### 升级通道
+
+安装版会自己检查新版本，走 Tauri 官方 updater：
+
+- **入口**：右键任务栏托盘图标 →「检查更新」。发现新版本后同一位置变成「安装更新 v1.0.1」，点击即下载、安装并重启。
+- **自动检查**：启动 15 秒后查一次，之后每 6 小时一次。开发构建（`npm run app:dev`）默认不检查，避免每次调试都打 GitHub；设 `LANDROP_FORCE_UPDATE_CHECK=1` 可强制。
+- **更新源**：GitHub Releases 的 `latest.json`，地址写死在 `src-tauri/tauri.conf.json` 的 `plugins.updater.endpoints`。
+- **校验**：安装包用 ed25519 签名，公钥固定在 `tauri.conf.json`；私钥不进仓库，本地在 `~/.tauri/landrop-updater.key`，CI 用仓库 Secret `TAURI_SIGNING_PRIVATE_KEY`。
+- **控制台只读展示**：页面是本地 HTTP 服务渲染的，不走 Tauri IPC，所以 Rust 检查完把结论写进 `data/update-state.json`，后端在 `/api/state` 的 `app.update` 里读给「设置 → 关于与更新」看。
+
+本地构建带签名的安装包：
+
+```bash
+export TAURI_SIGNING_PRIVATE_KEY="$(cat ~/.tauri/landrop-updater.key)"
+npm run app:build      # 产出 .exe 与同名 .exe.sig
+```
+
+发新版本：
+
+```bash
+node scripts/set-version.mjs 1.0.1   # 一次性同步 package.json / tauri.conf.json / Cargo.toml / server VERSION
+git commit -am "chore: 1.0.1"
+git tag v1.0.1 && git push origin main --tags
+```
+
+推 tag 会触发 `Release` workflow：同步版本号 → 构建 sidecar → 打 NSIS 安装包 → 签名 → 发布到 Releases（含 `latest.json`）。已装旧版的用户托盘里会自动出现「安装更新」。
+
 ### 发给同事
 
 ```bash
 npm run app:build     # 出安装包
 npm run release:pack  # 安装包 + 说明 + 哈希 → dist/LanDrop-1.0.0-发布包.zip
 ```
-
 `dist/release/` 里放三样：改名后的安装包（`LanDrop-Setup-1.0.0-x64.exe`）、`给同事看的说明.txt`、`SHA256.txt`；`release:pack` 把它们压成一个 zip（微信/邮件直接传 exe 容易被拦，zip 更稳）。
 
 安装包是 **per-user 安装**：装到 `%LOCALAPPDATA%\LanDrop`，不需要管理员权限，也不写 `Program Files`。卸载走「设置 → 应用」，会删掉程序目录，但**不会删** `~/LanDrop` 里收到的文件。

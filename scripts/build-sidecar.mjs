@@ -27,6 +27,29 @@ function findSigntool() {
   return null;
 }
 
+/**
+ * 直接把 PE 可选头里的证书表目录（DataDirectory[4]）清零。
+ * 等价于 signtool remove，但不需要装 Windows SDK——CI 机器上不一定有 signtool，
+ * postject 见到非空证书表会拒绝注入。
+ */
+function stripCertificateTable(file) {
+  const buf = fs.readFileSync(file);
+  if (buf.length < 0x40 || buf.readUInt16LE(0) !== 0x5a4d) return false; // 不是 MZ
+  const peOff = buf.readUInt32LE(0x3c);
+  if (buf.readUInt32LE(peOff) !== 0x00004550) return false; // 不是 PE\0\0
+  const optOff = peOff + 24;
+  const magic = buf.readUInt16LE(optOff);
+  // PE32+ 的 DataDirectory 在可选头偏移 112，PE32 在 96
+  const dirOff = optOff + (magic === 0x20b ? 112 : 96);
+  const certOff = dirOff + 4 * 8;
+  if (certOff + 8 > buf.length) return false;
+  if (buf.readUInt32LE(certOff) === 0 && buf.readUInt32LE(certOff + 4) === 0) return false;
+  buf.writeUInt32LE(0, certOff);
+  buf.writeUInt32LE(0, certOff + 4);
+  fs.writeFileSync(file, buf);
+  return true;
+}
+
 step("打包服务端源码为单文件");
 fs.rmSync(BUILD, { recursive: true, force: true });
 fs.mkdirSync(BUILD, { recursive: true });
@@ -69,16 +92,24 @@ fs.mkdirSync(path.dirname(OUT_EXE), { recursive: true });
 fs.copyFileSync(process.execPath, OUT_EXE);
 
 // 官方 node.exe 带数字签名，注入前必须先剥掉，否则 postject 会拒绝写入
-const signtool = findSigntool();
+// LANDROP_SKIP_SIGNTOOL=1 可强制走纯 PE 头的路径（CI 无 Windows SDK 时就是这条路）
+const signtool = process.env.LANDROP_SKIP_SIGNTOOL === "1" ? null : findSigntool();
+let stripped = false;
 if (signtool) {
   try {
     execFileSync(signtool, ["remove", "/s", OUT_EXE], { stdio: "pipe" });
-    console.log("  已移除原有数字签名");
+    console.log("  已移除原有数字签名（signtool）");
+    stripped = true;
   } catch {
-    console.log("  跳过签名移除（可能本来就没有签名）");
+    console.log("  signtool 移除失败，改清 PE 证书表");
   }
-} else {
-  console.log("  未找到 signtool，直接尝试注入");
+}
+if (!stripped) {
+  if (stripCertificateTable(OUT_EXE)) {
+    console.log("  已清空 PE 证书表目录");
+  } else {
+    console.log("  证书表本来就是空的，无需处理");
+  }
 }
 
 execFileSync(

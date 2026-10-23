@@ -534,6 +534,40 @@ landrop apply --preset kind</pre>
             </p>
           </section>
 
+          <section class="panel settings-panel" id="about-panel">
+            <div class="panel-head">
+              <div class="panel-title">
+                <h2>关于与更新</h2>
+                <p>桌面端启动后自动检查，也可以从托盘手动发起</p>
+              </div>
+              <span class="mono-chip" id="update-chip">—</span>
+            </div>
+
+            <div class="skill-row">
+              <div class="s-text">
+                <strong>当前版本</strong>
+                <span class="mono" id="app-version">—</span>
+              </div>
+              <div class="s-control">
+                <button class="btn btn-ghost btn-sm" type="button" id="copy-releases">复制发布页</button>
+              </div>
+            </div>
+
+            <div class="skill-row">
+              <div class="s-text">
+                <strong>更新通道</strong>
+                <span class="mono" id="update-channel">—</span>
+              </div>
+              <div class="s-control">
+                <span class="mono-chip" id="update-when">未检查</span>
+              </div>
+            </div>
+
+            <p class="field-hint" id="update-hint">
+              自动更新只对安装版生效。右键任务栏托盘图标，可以看到「检查更新」；发现新版本后同一位置会变成「安装更新 vX.Y.Z」，点击即下载并重启。
+            </p>
+          </section>
+
           <div class="settings-actions">
             <button class="btn btn-primary btn-sm" type="button" id="save-settings">保存设置</button>
             <button class="btn btn-quiet btn-sm" type="button" id="discard-settings">放弃更改</button>
